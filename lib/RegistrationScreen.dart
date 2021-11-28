@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'InputDeco_design.dart';
+import 'signin.dart';
 import 'package:http/http.dart' as http;
 
 class RegistrationScreen extends StatefulWidget {
@@ -83,7 +85,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       if (value.isEmpty) {
                         return "Please enter  phone";
                       }
-                      if (value.length < 9) {
+                      if (value.length < 10) {
                         return "Please enter valid phone";
                       }
                       return null;
@@ -170,12 +172,50 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       'member_phone': _phone.text,
       'password': _password.text
     };
+
     //send  data using http post to our php code
     http.Response reponse = await http.post(url, body: mapeddate);
 
     //getting response from php code, here
     var data = jsonDecode(reponse.body);
-    print("DATA: ${data}");
+    //print("DATA: ${data}");
+
+    if(data["code"] ==200)
+      {
+        var message = data["message"];
+        print(message);
+
+        final snackBar = SnackBar(
+          content: Text(message),
+          action: SnackBarAction(
+            label: 'Signin',
+            onPressed: () {
+              Navigator.push(context, CupertinoPageRoute(builder: (context)=> SigninScreen()));
+            },
+          ),
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        Navigator.push(context, CupertinoPageRoute(builder: (context)=> SigninScreen()));
+
+      }else{
+      var message = data["message"];
+      print(message);
+
+      final snackBar = SnackBar(
+        content: Text(message),
+        action: SnackBarAction(
+          label: 'Ok',
+          onPressed: () {
+
+          },
+        ),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+
+
 
   }
 }
